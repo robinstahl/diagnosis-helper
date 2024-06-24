@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import "./SpeechToText.css";
+import React, { useState } from 'react';
+import { FaMicrophone } from 'react-icons/fa';
+import './SpeechToText.css';
 
 interface SpeechToTextProps {
   onSpeechToText: (text: string) => void;
@@ -11,7 +12,7 @@ const SpeechToText: React.FC<SpeechToTextProps> = ({ onSpeechToText }) => {
   const handleSpeech = () => {
     const recognition = new ((window as any).SpeechRecognition ||
       (window as any).webkitSpeechRecognition)();
-    recognition.lang = "de-DE";
+    recognition.lang = 'de-DE';
 
     if (!recording) {
       recognition.start();
@@ -28,10 +29,10 @@ const SpeechToText: React.FC<SpeechToTextProps> = ({ onSpeechToText }) => {
 
   return (
     <button
-      className={`microphone ${recording ? "recording" : ""}`}
+      className={`microphone ${recording ? 'recording' : ''}`}
       onClick={handleSpeech}
     >
-      <i className="fa-solid fa-microphone"></i>
+      <FaMicrophone />
     </button>
   );
 };
