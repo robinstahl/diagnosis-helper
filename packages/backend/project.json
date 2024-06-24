@@ -1,0 +1,17 @@
+{
+  "name": "backend",
+  "root": "/packages/backend",
+  "sourceRoot": "packages/backend/src",
+  "projectType": "application",
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "runInBackground": true,
+        "command": "source venv/bin/activate && FLASK_APP=src/app.py flask run",
+        "cwd": "packages/backend/src"
+      }
+    }
+  },
+  "tags": []
+}

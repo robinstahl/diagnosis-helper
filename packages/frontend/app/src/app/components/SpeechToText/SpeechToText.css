@@ -1,0 +1,14 @@
+.icon {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.icon i {
+  font-family: "Font Awesome 6 Solid";
+  font-size: 24px;
+  color: #333;
+}
+
+.icon:hover i {
+  color: #666;
+}

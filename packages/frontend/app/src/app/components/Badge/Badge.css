@@ -1,0 +1,26 @@
+.badge {
+  display: inline-block;
+  padding: 0.5em 1em;
+  border-radius: 0.25em;
+  font-size: 0.875em;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+}
+
+.badge-medicine {
+  background-color: #dd00ff;
+}
+
+.badge-diagnose {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.badge-treatment {
+  background-color: #ccff00;
+}
+
+.badge-info {
+  background-color: #17a2b8;
+}
