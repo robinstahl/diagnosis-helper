@@ -3,16 +3,26 @@ import SpeechToText from '../../components/SpeechToText/SpeechToText';
 import Tabs from '../../components/Tabs/Tabs';
 import TextInput from '../../components/TextInput/TextInput';
 import Button from '../../components/Button/Button';
+import useClassifyText from '../../hooks/useClassifyText'; // Passe den Pfad entsprechend an
 import './DiagnosisHelper.css';
 
 const DiagnosisHelper = () => {
   const [diagnosis, setDiagnosis] = useState('');
+  const { classifyText, loading, error } = useClassifyText();
+
   const handleSpeechToText = (transcript: string) => {
     setDiagnosis(transcript);
   };
-  const handleDiagnosisRequest = () => {
-    console.log('Diagnose anfordern');
+
+  const handleDiagnosisRequest = async (
+    model: 'TinyBrollt' | 'GelectraLarge'
+  ) => {
+    const response = await classifyText(model, diagnosis);
+    if (response) {
+      console.log(`Diagnose Ergebnis für ${model}:`, response);
+    }
   };
+
   const tabs = [
     {
       label: 'Huggingface v.1',
@@ -32,11 +42,15 @@ const DiagnosisHelper = () => {
           </div>
           <div className="diagnosis-helper__model-tabs__button">
             <Button
-              onClick={handleDiagnosisRequest}
+              onClick={() => handleDiagnosisRequest('TinyBrollt')}
               styleType={'primary'}
-              text={'Diagnose anfordern'}
+              text={
+                loading ? 'Diagnose wird angefordert...' : 'Diagnose anfordern'
+              }
+              disabled={loading}
             />
           </div>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
         </>
       ),
     },
@@ -58,11 +72,15 @@ const DiagnosisHelper = () => {
           </div>
           <div className="diagnosis-helper__model-tabs__button">
             <Button
-              onClick={handleDiagnosisRequest}
+              onClick={() => handleDiagnosisRequest('GelectraLarge')}
               styleType={'primary'}
-              text={'Diagnose anfordern'}
+              text={
+                loading ? 'Diagnose wird angefordert...' : 'Diagnose anfordern'
+              }
+              disabled={loading}
             />
           </div>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
         </>
       ),
     },
@@ -71,6 +89,7 @@ const DiagnosisHelper = () => {
       content: <div>Bitte gib hier dein Feedback...</div>,
     },
   ];
+
   return (
     <div className="diagnosis-helper">
       <div className="diagnosis-helper__model-tabs">
@@ -84,4 +103,5 @@ const DiagnosisHelper = () => {
     </div>
   );
 };
+
 export default DiagnosisHelper;

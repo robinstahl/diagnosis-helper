@@ -36,3 +36,20 @@
 .button:focus.danger {
   box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.5);
 }
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.button:disabled.primary {
+  background-color: #7b68ee;
+}
+
+.button:disabled.secondary {
+  background-color: #dcdcdc;
+}
+
+.button:disabled.danger {
+  background-color: #cd5c5c;
+}
