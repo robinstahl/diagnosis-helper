@@ -2,6 +2,7 @@ import time
 import spacy
 import torch
 import torch.nn.functional as F
+from flask_cors import CORS
 
 from tinybrollt_service import process_text as tinybrollt_process_text
 from gelectralarge_service import process_text as gelectralarge_process_text
@@ -10,6 +11,7 @@ from databse_service import add_instance,get_instance_by_id,init_db
 from flask import Flask, jsonify,request
 
 app = Flask(__name__)
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://diagnosis_user:password@localhost:3031/diagnosis_helper'
 
 
