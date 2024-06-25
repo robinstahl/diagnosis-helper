@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import axios from 'axios';
 
 interface ClassificationResponse {
   id: string;
@@ -28,14 +27,22 @@ const useClassifyText = (): UseClassifyTextHook => {
     setError(null);
 
     try {
-      const response = await axios.get<ClassificationResponse>(
-        `/classifyText/${model}`,
+      const response = await fetch(
+        `http://localhost:3030/classifyText/${model}?text=${text}`,
         {
-          params: { text },
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         }
       );
 
-      return response.data;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data: ClassificationResponse = await response.json();
+      return data;
     } catch (err: any) {
       setError(err.message);
       return null;
