@@ -10,7 +10,7 @@ from databse_service import add_instance,get_instance_by_id,init_db
 from flask import Flask, jsonify,request
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://diagnosis_user:password@localhost:5432/diagnosis_helper'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://diagnosis_user:password@localhost:3031/diagnosis_helper'
 
 
 init_db(app)
@@ -34,8 +34,8 @@ def classify_text_gelectralarge():
     id = add_instance(erg,"GelectraLarge")
     return jsonify({"id": id,"model":"GelectraLarge", "data": erg})
 
-#@app.route('/database/missedToken') #GET und PUT 
-#@app.route('/database/wrongToken')  #GET und PUT 
+#@app.route('/database/missedToken') #GET und PUT
+#@app.route('/database/wrongToken')  #GET und PUT
 
 
 
