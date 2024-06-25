@@ -3,8 +3,9 @@ import SpeechToText from '../../components/SpeechToText/SpeechToText';
 import Tabs from '../../components/Tabs/Tabs';
 import TextInput from '../../components/TextInput/TextInput';
 import Button from '../../components/Button/Button';
-import useClassifyText from '../../hooks/useClassifyText'; // Passe den Pfad entsprechend an
+import useClassifyText from '../../hooks/useClassifyText';
 import './DiagnosisHelper.css';
+import AiArena from '../../components/AiArena/AiArena';
 
 const DiagnosisHelper = () => {
   const [diagnosis, setDiagnosis] = useState('');
@@ -94,7 +95,7 @@ const DiagnosisHelper = () => {
     <div className="diagnosis-helper">
       <div className="diagnosis-helper__model-tabs">
         <div className="diagnosis-helper__model-tabs__left">
-          {/* Hier können zusätzliche Inhalte für die linke Seite eingefügt werden */}
+          <AiArena />
         </div>
         <div className="diagnosis-helper__model-tabs__right">
           <Tabs tabs={tabs} />

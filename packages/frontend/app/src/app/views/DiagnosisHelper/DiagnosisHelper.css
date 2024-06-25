@@ -3,7 +3,7 @@ html {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden; /* Verhindert das Scrollen */
+  overflow: hidden;
 }
 
 .diagnosis-helper {
@@ -11,7 +11,7 @@ html {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: 100vh; /* Nimmt die gesamte Höhe des Viewports ein */
+  height: 100vh;
   padding: 10px;
   box-sizing: border-box;
 }
@@ -19,7 +19,7 @@ html {
 .diagnosis-helper__model-tabs {
   display: flex;
   width: 100%;
-  height: 100%; /* Nimmt die gesamte Höhe des Eltern-Containers ein */
+  height: 100%;
   box-sizing: border-box;
 }
 
@@ -30,9 +30,9 @@ html {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Sorgt dafür, dass die Inhalte oben ausgerichtet sind */
-  justify-content: flex-start; /* Sorgt dafür, dass die Inhalte oben ausgerichtet sind */
-  height: 100%; /* Nimmt die gesamte Höhe des Eltern-Containers ein */
+  align-items: flex-start;
+  justify-content: flex-start;
+  height: 100%;
 }
 
 .diagnosis-helper__model-tabs__left {
@@ -42,7 +42,7 @@ html {
 .diagnosis-helper__model-tabs__text-input {
   font-size: 16px;
   width: 100%;
-  flex: 1; /* Nimmt den verfügbaren Platz ein */
+  flex: 1;
   margin: 10px 0;
   padding: 10px;
   box-sizing: border-box;
