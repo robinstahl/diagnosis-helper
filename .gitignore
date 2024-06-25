@@ -8,6 +8,10 @@ tmp
 # dependencies
 node_modules
 
+#venv
+/packages/backend/venv
+/packages/backend/__pyache__
+
 # IDEs and editors
 /.idea
 .project
