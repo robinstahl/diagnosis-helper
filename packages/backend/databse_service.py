@@ -14,7 +14,7 @@ def add_instance(input_text, generated_response_in, model_name):
     generated_response_str = json.dumps(generated_response_in)
     new_entry = Request(
         input_text=input_text,
-        generatedResponse=[generated_response_str],  
+        generatedResponse=[generated_response_str],
         model=model_name,
         timestamp=datetime.now().astimezone()
     )
@@ -28,14 +28,36 @@ def get_instance_by_id(model, id):
 def get_all_instances(model):
     return model.query.all()
 
+def add_missed_tokens(id, tokens):
+    request_instance = get_instance_by_id(Request, id)
+    if request_instance.missed_tokens is None:
+        request_instance.missed_tokens = []
+    request_instance.missed_tokens.extend(tokens)
+    db.session.commit()
+
+def get_missed_tokens(id):
+    request_instance = get_instance_by_id(Request, id)
+    return request_instance.missed_tokens
+
+def add_wrong_tokens(id, tokens):
+    request_instance = get_instance_by_id(Request, id)
+    if request_instance.wrong_tokens is None:
+        request_instance.wrong_tokens = []
+    request_instance.wrong_tokens.extend(tokens)
+    db.session.commit()
+
+def get_wrong_tokens(id):
+    request_instance = get_instance_by_id(Request, id)
+    return request_instance.wrong_tokens
+
 class Request(db.Model):
     __tablename__ = 'requests'
-    
+
     id = db.Column(db.Integer, primary_key=True)
     input_text = db.Column(db.String(255), nullable=False)
     missed_tokens = db.Column('missedTokens', ARRAY(db.String), nullable=True)
     wrong_tokens = db.Column('wrongToken', ARRAY(db.String), nullable=True)
-    generatedResponse = db.Column(db.Text, nullable=True) 
+    generatedResponse = db.Column(db.Text, nullable=True)
     model = db.Column(db.String, nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
