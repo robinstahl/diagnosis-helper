@@ -45,10 +45,5 @@ def process_text(text):
         "TREAT": results["TREAT"]
     }
 
-app = Flask(__name__)
 
-@app.route('/classify', methods=['POST'])
-def classify():
-    data = request.json
-    text = data.get('text', '')
 
