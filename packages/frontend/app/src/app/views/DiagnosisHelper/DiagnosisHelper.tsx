@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import SpeechToText from '../../components/SpeechToText/SpeechToText';
 import Tabs from '../../components/Tabs/Tabs';
 import TextInput from '../../components/TextInput/TextInput';
 import Button from '../../components/Button/Button';
 import useClassifyText from '../../hooks/useClassifyText';
 import './DiagnosisHelper.css';
-import AiArena from '../../components/AiArena/AiArena';
+import AiArena from '../AiArena/AiArena';
+import { AiOutlineArrowLeft } from 'react-icons/ai';
 
 const DiagnosisHelper = () => {
   const [diagnosis, setDiagnosis] = useState('');
@@ -92,13 +94,16 @@ const DiagnosisHelper = () => {
   ];
 
   return (
-    <div className="diagnosis-helper">
-      <div className="diagnosis-helper__model-tabs">
-        <div className="diagnosis-helper__model-tabs__left">
-          <AiArena />
-        </div>
-        <div className="diagnosis-helper__model-tabs__right">
-          <Tabs tabs={tabs} />
+    <div className="diagnosis-helper-container">
+      <Link to="/" className="back-arrow">
+        <AiOutlineArrowLeft />
+      </Link>
+      <div className="diagnosis-helper">
+        <div className="diagnosis-helper__model-tabs">
+          <div className="diagnosis-helper__model-tabs__left"></div>
+          <div className="diagnosis-helper__model-tabs__right">
+            <Tabs tabs={tabs} />
+          </div>
         </div>
       </div>
     </div>

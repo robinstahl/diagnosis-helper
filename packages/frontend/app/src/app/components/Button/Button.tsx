@@ -2,7 +2,7 @@ import React from 'react';
 import './Button.css';
 
 interface Props {
-  onClick: () => void;
+  onClick?: () => void;
   styleType: 'primary' | 'secondary' | 'danger';
   text: string;
   disabled?: boolean;

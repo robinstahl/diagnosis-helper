@@ -12,7 +12,7 @@ from flask import Flask, jsonify,request
 
 app = Flask(__name__)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://diagnosis_user:password@localhost:3031/diagnosis_helper'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://diagnosis_user:password@localhost:5432/diagnosis_helper'
 
 
 init_db(app)

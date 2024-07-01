@@ -1,0 +1,33 @@
+.app {
+  text-align: center;
+}
+
+.centered-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 90vh;
+}
+
+.svg-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  max-width: 400px;
+  max-height: 400px;
+}
+
+.centered-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 200px;
+  text-align: center;
+}

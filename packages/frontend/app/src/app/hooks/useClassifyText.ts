@@ -1,16 +1,23 @@
 import { useState } from 'react';
 
+interface DiagnosisResponse {
+  DIAG: string[];
+  MED: string[];
+  TREAT: string[];
+  input: string;
+}
+
 interface ClassificationResponse {
   id: string;
   model: string;
-  data: any;
+  data: DiagnosisResponse;
 }
 
 interface UseClassifyTextHook {
   classifyText: (
     model: 'TinyBrollt' | 'GelectraLarge',
     text: string
-  ) => Promise<ClassificationResponse | null>;
+  ) => Promise<DiagnosisResponse | null>;
   loading: boolean;
   error: string | null;
 }
@@ -22,7 +29,7 @@ const useClassifyText = (): UseClassifyTextHook => {
   const classifyText = async (
     model: 'TinyBrollt' | 'GelectraLarge',
     text: string
-  ): Promise<ClassificationResponse | null> => {
+  ): Promise<DiagnosisResponse | null> => {
     setLoading(true);
     setError(null);
 
@@ -42,7 +49,7 @@ const useClassifyText = (): UseClassifyTextHook => {
       }
 
       const data: ClassificationResponse = await response.json();
-      return data;
+      return data.data;
     } catch (err: any) {
       setError(err.message);
       return null;

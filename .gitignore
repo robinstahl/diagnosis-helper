@@ -10,7 +10,7 @@ node_modules
 
 #venv
 /packages/backend/venv
-/packages/backend/__pycache__
+/packages/backend/__pycache__/*
 
 # IDEs and editors
 /.idea
