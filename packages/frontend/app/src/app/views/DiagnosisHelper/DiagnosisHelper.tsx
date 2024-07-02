@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import SpeechToText from '../../components/SpeechToText/SpeechToText';
 import Tabs from '../../components/Tabs/Tabs';
@@ -6,12 +6,36 @@ import TextInput from '../../components/TextInput/TextInput';
 import Button from '../../components/Button/Button';
 import useClassifyText from '../../hooks/useClassifyText';
 import './DiagnosisHelper.css';
-import AiArena from '../AiArena/AiArena';
 import { AiOutlineArrowLeft } from 'react-icons/ai';
+import Table from '../../components/Table/Table';
 
-const DiagnosisHelper = () => {
+const DiagnosisHelper: React.FC = () => {
   const [diagnosis, setDiagnosis] = useState('');
+  const [columns, setColumns] = useState<string[]>([]);
+  const [data, setData] = useState<{ [key: string]: any }[]>([]);
   const { classifyText, loading, error } = useClassifyText();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:3030/api/requests');
+        const result = await response.json();
+        setColumns([
+          'input_text',
+          'missed_tokens',
+          'wrong_tokens',
+          'generatedResponse',
+          'model',
+          'timestamp',
+        ]);
+        setData(result);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleSpeechToText = (transcript: string) => {
     setDiagnosis(transcript);
@@ -23,6 +47,24 @@ const DiagnosisHelper = () => {
     const response = await classifyText(model, diagnosis);
     if (response) {
       console.log(`Diagnose Ergebnis für ${model}:`, response);
+      setColumns([
+        'input_text',
+        'missed_tokens',
+        'wrong_tokens',
+        'generated_response',
+        'model',
+        'timestamp',
+      ]);
+      setData([
+        {
+          input_text: 'Example Input',
+          missed_tokens: 'Token1, Token2',
+          wrong_tokens: 'Token3, Token4',
+          generated_response: 'Response Text',
+          model: 'TinyBrollt',
+          timestamp: new Date().toLocaleString(),
+        },
+      ]);
     }
   };
 
@@ -39,7 +81,7 @@ const DiagnosisHelper = () => {
             <TextInput
               value={diagnosis}
               onChange={setDiagnosis}
-              height="70vh"
+              height="60vh"
               width="100%"
             />
           </div>
@@ -69,7 +111,7 @@ const DiagnosisHelper = () => {
             <TextInput
               value={diagnosis}
               onChange={setDiagnosis}
-              height="70vh"
+              height="60vh"
               width="100%"
             />
           </div>
@@ -100,7 +142,9 @@ const DiagnosisHelper = () => {
       </Link>
       <div className="diagnosis-helper">
         <div className="diagnosis-helper__model-tabs">
-          <div className="diagnosis-helper__model-tabs__left"></div>
+          <div className="diagnosis-helper__model-tabs__left">
+            <Table columns={columns} data={data} />
+          </div>
           <div className="diagnosis-helper__model-tabs__right">
             <Tabs tabs={tabs} />
           </div>

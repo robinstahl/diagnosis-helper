@@ -26,23 +26,49 @@ const AiArena = () => {
     const tinyBrolltPromise = classifyText('TinyBrollt', diagnosis);
     const gelectraLargePromise = classifyText('GelectraLarge', diagnosis);
 
-    const [tinyBrolltResponse, gelectraLargeResponse] = await Promise.all([
+    const [tinyBrolltRes, gelectraLargeRes] = await Promise.all([
       tinyBrolltPromise,
       gelectraLargePromise,
     ]);
 
-    if (tinyBrolltResponse) {
-      setTinyBrolltResponse(tinyBrolltResponse as DiagnosisResponse);
-      console.log(`Diagnose Ergebnis für TinyBrollt:`, tinyBrolltResponse);
+    if (tinyBrolltRes) {
+      setTinyBrolltResponse(tinyBrolltRes as DiagnosisResponse);
+      console.log(`Diagnose Ergebnis für TinyBrollt:`, tinyBrolltRes);
     }
 
-    if (gelectraLargeResponse) {
-      setGelectraLargeResponse(gelectraLargeResponse as DiagnosisResponse);
-      console.log(
-        `Diagnose Ergebnis für GelectraLarge:`,
-        gelectraLargeResponse
-      );
+    if (gelectraLargeRes) {
+      setGelectraLargeResponse(gelectraLargeRes as DiagnosisResponse);
+      console.log(`Diagnose Ergebnis für GelectraLarge:`, gelectraLargeRes);
     }
+  };
+
+  const renderResponse = (response: DiagnosisResponse | null) => {
+    if (!response || !response.input) {
+      return <p>No response yet</p>;
+    }
+
+    return (
+      <div className="response-container">
+        <div className="response-item">
+          {response.input.split(' ').map((word, index) => (
+            <React.Fragment key={index}>
+              <span>
+                {word}{' '}
+                {response.DIAG.includes(word) && (
+                  <Badge badgeType={BadgeTypes.DIAGNOSE} />
+                )}
+                {response.MED.includes(word) && (
+                  <Badge badgeType={BadgeTypes.MEDICINE} />
+                )}
+                {response.TREAT.includes(word) && (
+                  <Badge badgeType={BadgeTypes.TREATMENT} />
+                )}{' '}
+              </span>
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -75,55 +101,11 @@ const AiArena = () => {
         <div className="response-container">
           <div className="response-box">
             <h2>TinyBrollt Response</h2>
-            {tinyBrolltResponse && tinyBrolltResponse.input && (
-              <div className="response-container">
-                <div className="response-item">
-                  {tinyBrolltResponse.input.split(' ').map((word, index) => (
-                    <React.Fragment key={index}>
-                      <span>
-                        {word}{' '}
-                        {tinyBrolltResponse.DIAG[index] && (
-                          <Badge badgeType={BadgeTypes.DIAGNOSE} />
-                        )}
-                        {tinyBrolltResponse.MED[index] && (
-                          <Badge badgeType={BadgeTypes.MEDICINE} />
-                        )}
-                        {tinyBrolltResponse.TREAT[index] && (
-                          <Badge badgeType={BadgeTypes.TREATMENT} />
-                        )}{' '}
-                      </span>
-                    </React.Fragment>
-                  ))}
-                </div>
-              </div>
-            )}
-            {!tinyBrolltResponse && <p>No response yet</p>}
+            {renderResponse(tinyBrolltResponse)}
           </div>
           <div className="response-box">
             <h2>GelectraLarge Response</h2>
-            {gelectraLargeResponse && gelectraLargeResponse.input && (
-              <div className="response-container">
-                <div className="response-item">
-                  {gelectraLargeResponse.input.split(' ').map((word, index) => (
-                    <React.Fragment key={index}>
-                      <span>
-                        {word}{' '}
-                        {gelectraLargeResponse.DIAG[index] && (
-                          <Badge badgeType={BadgeTypes.DIAGNOSE} />
-                        )}
-                        {gelectraLargeResponse.MED[index] && (
-                          <Badge badgeType={BadgeTypes.MEDICINE} />
-                        )}
-                        {gelectraLargeResponse.TREAT[index] && (
-                          <Badge badgeType={BadgeTypes.TREATMENT} />
-                        )}{' '}
-                      </span>
-                    </React.Fragment>
-                  ))}
-                </div>
-              </div>
-            )}
-            {!gelectraLargeResponse && <p>No response yet</p>}
+            {renderResponse(gelectraLargeResponse)}
           </div>
         </div>
       </div>
