@@ -1,23 +1,18 @@
 import json
 import time
-import spacy
-import torch
-import torch.nn.functional as F
 from flask_cors import CORS
-from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.dialects.postgresql import ARRAY
 from flask import Flask, jsonify, request
 
+from datetime import datetime
 from tinybrollt_service import process_text as tinybrollt_process_text
 from gelectralarge_service import process_text as gelectralarge_process_text
-from databse_service import add_instance, get_instance_by_id, init_db, add_missed_tokens, get_missed_tokens, add_wrong_tokens, get_wrong_tokens
+from databse_service import add_instance, get_instance_by_id, init_db, add_missed_tokens, get_missed_tokens, add_wrong_tokens, get_wrong_tokens, get_all_requests
 
 app = Flask(__name__)
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://diagnosis_user:password@localhost:5432/diagnosis_helper'
 
-# db = SQLAlchemy(app)
 init_db(app)
 
 @app.route('/test')
@@ -41,19 +36,12 @@ def classify_text_gelectralarge():
 
 @app.route('/api/requests', methods=['GET'])
 def get_requests():
-    requests = Request.query.all()
-    result = [
-        {
-            'input_text': req.input_text,
-            'missed_tokens': req.missed_tokens,
-            'wrong_tokens': req.wrong_tokens,
-            'generatedResponse': req.generatedResponse,
-            'model': req.model,
-            'timestamp': req.timestamp.isoformat()
-        }
-        for req in requests
-    ]
-    return jsonify(result)
+    requests = get_all_requests()
+    for req in requests:
+        req['missed_tokens'] = json.dumps(req['missed_tokens'])
+        req['wrong_tokens'] = json.dumps(req['wrong_tokens'])
+    return jsonify(requests)
+
 
 @app.route('/database/missedToken', methods=['GET', 'PUT'])
 def handle_missed_token():
