@@ -34,11 +34,11 @@ def process_text(text):
         label = classify_word(word)
         print("word classified: " + label)  # Debugging output
         if label == "MED":
-            results["MED"].append(word + "->" + label)
+            results["MED"].append(word)
         elif label == "DIAG":
-            results["DIAG"].append(word + "->" + label)
+            results["DIAG"].append(word)
         elif label == "TREAT":
-            results["TREAT"].append(word + "->" + label)
+            results["TREAT"].append(word)
 
     return {
         "input": text,
