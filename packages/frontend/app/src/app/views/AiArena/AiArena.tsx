@@ -44,7 +44,7 @@ const AiArena = () => {
 
   const renderResponse = (response: DiagnosisResponse | null) => {
     if (!response || !response.input) {
-      return <p>No response yet</p>;
+      return <p>Noch kein Vergleich möglich, bitte Text eingeben!</p>;
     }
 
     return (

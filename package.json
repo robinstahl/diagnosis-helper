@@ -5,8 +5,10 @@
   "scripts": {
     "start:frontend": "nx serve frontend",
     "start:backend": "bash start_backend.sh",
+    "start:backend:windoof": "bash start_backend.bat",
     "start:all": "concurrently \"npm run start:frontend\" \"npm run start:backend\"",
-    "postinstall": "cd packages/backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt"
+    "postinstall": "cd packages/backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt",
+    "start:windoof": "concurrently \"npm run start:frontend\" \"npm run start:backend:windoof\""
   },
   "private": true,
   "devDependencies": {
