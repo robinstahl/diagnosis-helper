@@ -30,6 +30,7 @@ def classify_text_tinybrollt():
     text = request.args.get('text', default='', type=str)
     erg = tinybrollt_process_text(text)
     id = add_instance(text, erg, "TinyBrollt")
+    print("a")
     return jsonify({"id": id, "model": "TinyBrollt", "data": erg})
 
 @app.route('/classifyText/GelectraLarge', methods=['GET'])

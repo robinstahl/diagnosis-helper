@@ -44,3 +44,7 @@ Thumbs.db
 
 .nx/cache
 .nx/workspace-data
+packages/backend/__pycache__/api.cpython-312.pyc
+packages/backend/__pycache__/databse_service.cpython-312.pyc
+packages/backend/__pycache__/gelectralarge_service.cpython-312.pyc
+packages/backend/__pycache__/tinybrollt_service.cpython-312.pyc
