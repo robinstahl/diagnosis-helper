@@ -1,6 +1,5 @@
 import json
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.dialects.postgresql import ARRAY
 from datetime import datetime
 
 db = SQLAlchemy()
@@ -37,7 +36,8 @@ def add_missed_tokens(id, tokens):
 
     for category, new_tokens in tokens.items():
         if category in missed_tokens:
-            missed_tokens[category].extend(new_tokens)
+            missed_tokens[category].extend([token for token in new_tokens if token])
+
     request_instance.missed_tokens = json.dumps(missed_tokens)
     db.session.commit()
 
@@ -57,7 +57,8 @@ def add_wrong_tokens(id, tokens):
 
     for category, new_tokens in tokens.items():
         if category in wrong_tokens:
-            wrong_tokens[category].extend(new_tokens)
+            wrong_tokens[category].extend([token for token in new_tokens if token])
+
     request_instance.wrong_tokens = json.dumps(wrong_tokens)
     db.session.commit()
 
