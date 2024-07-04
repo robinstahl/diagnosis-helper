@@ -52,11 +52,11 @@ def process_text(text):
         label = classify_word(word)
         print("word classified: " + label)
         if label.endswith("MED"):
-            results["MED"].append(word + "->" + label)
+            results["MED"].append(word)
         elif label.endswith("DIAG"):
-            results["DIAG"].append(word + "->" + label)
+            results["DIAG"].append(word)
         elif label.endswith("TREAT"):
-            results["TREAT"].append(word + "->" + label)
+            results["TREAT"].append(word)
     return {
         "input": text,
         "MED": results["MED"],
