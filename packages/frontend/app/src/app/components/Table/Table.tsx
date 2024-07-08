@@ -7,6 +7,16 @@ interface TableComponentProps {
 }
 
 const Table: React.FC<TableComponentProps> = ({ columns, data }) => {
+  const renderCellContent = (content: React.ReactNode) => {
+    if (React.isValidElement(content)) {
+      return content;
+    }
+    if (typeof content === 'object' && content !== null) {
+      return JSON.stringify(content);
+    }
+    return content;
+  };
+
   return (
     <div className="table-container">
       <table className="data-table">
@@ -21,7 +31,7 @@ const Table: React.FC<TableComponentProps> = ({ columns, data }) => {
           {data.map((row, rowIndex) => (
             <tr key={rowIndex}>
               {columns.map((column, colIndex) => (
-                <td key={colIndex}>{row[column]}</td>
+                <td key={colIndex}>{renderCellContent(row[column])}</td>
               ))}
             </tr>
           ))}

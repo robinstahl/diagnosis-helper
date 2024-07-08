@@ -114,6 +114,12 @@ const AiArena = () => {
             height="30vh"
             width="100%"
           />
+          <br></br>
+          <div className="badge-container">
+            <Badge badgeType={BadgeTypes.DIAGNOSE} text={'DIAGNOSE'} />
+            <Badge badgeType={BadgeTypes.MEDICINE} text={'MEDIZIN'} />
+            <Badge badgeType={BadgeTypes.TREATMENT} text={'BEHANDLUNG'} />
+          </div>
         </div>
         <div className="button-container">
           <Button
@@ -126,7 +132,6 @@ const AiArena = () => {
                 ? 'Warte auf letzte Antwort...'
                 : 'Diagnose anfordern'
             }
-            disabled={loading || responsesReceived < 2}
           />
         </div>
 

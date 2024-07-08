@@ -38,7 +38,7 @@ def add_missed_tokens(id, tokens):
 
 def get_missed_tokens(id):
     request_instance = get_instance_by_id(Request, id)
-    return request_instance.missed_tokens or {"MED": [], "DIAG": [], "TREAT": []}
+    return request_instance.missed_tokens or {"Keine Daten verfügbar"}
 
 def add_wrong_tokens(id, tokens):
     request_instance = get_instance_by_id(Request, id)
@@ -53,7 +53,7 @@ def add_wrong_tokens(id, tokens):
 
 def get_wrong_tokens(id):
     request_instance = get_instance_by_id(Request, id)
-    return request_instance.wrong_tokens or {"MED": [], "DIAG": [], "TREAT": []}
+    return request_instance.wrong_tokens or {"Keine Daten verfügbar"}
 
 def get_all_requests():
     requests = Request.query.all()

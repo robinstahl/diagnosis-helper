@@ -42,7 +42,6 @@ const DiagnosisHelper: React.FC = () => {
   const [gelectraLargeTime, setGelectraLargeTime] = useState<number | null>(
     null
   );
-  const [responsesReceived, setResponsesReceived] = useState(0);
   const [selectedTab, setSelectedTab] = useState<
     'TinyBrollt' | 'GelectraLarge'
   >('TinyBrollt');
