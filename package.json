@@ -8,7 +8,7 @@
     "start:backend:windoof": "bash start_backend.bat",
     "start:all": "concurrently \"npm run start:frontend\" \"npm run start:backend\" \"docker compose up -d\"",
     "postinstall": "cd packages/backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt",
-    "start:windoof": "concurrently \"npm run start:frontend\" \"npm run start:backend:windoof\""
+    "start:windoof": "concurrently \"npm run start:frontend\" \"npm run start:backend:windoof\" \"docker compose up -d\""
   },
   "private": true,
   "devDependencies": {
