@@ -20,26 +20,41 @@ const AiArena = () => {
     useState<DiagnosisResponse | null>(null);
   const [gelectraLargeResponse, setGelectraLargeResponse] =
     useState<DiagnosisResponse | null>(null);
+  const [tinyBrolltTime, setTinyBrolltTime] = useState<number | null>(null);
+  const [gelectraLargeTime, setGelectraLargeTime] = useState<number | null>(
+    null
+  );
+  const [responsesReceived, setResponsesReceived] = useState(0);
   const { classifyText, loading, error } = useClassifyText();
 
   const handleDiagnosisRequests = async () => {
-    const tinyBrolltPromise = classifyText('TinyBrollt', diagnosis);
-    const gelectraLargePromise = classifyText('GelectraLarge', diagnosis);
+    setTinyBrolltResponse(null);
+    setTinyBrolltTime(null);
+    setGelectraLargeResponse(null);
+    setGelectraLargeTime(null);
+    setResponsesReceived(0);
 
-    const [tinyBrolltRes, gelectraLargeRes] = await Promise.all([
-      tinyBrolltPromise,
-      gelectraLargePromise,
-    ]);
+    const startTimeTinyBrollt = performance.now();
+    classifyText('TinyBrollt', diagnosis).then((response) => {
+      const endTimeTinyBrollt = performance.now();
+      setTinyBrolltResponse(response as DiagnosisResponse);
+      setTinyBrolltTime((endTimeTinyBrollt - startTimeTinyBrollt) / 1000);
+      setResponsesReceived((prev) => prev + 1);
+      console.log(`Diagnose Ergebnis für TinyBrollt:`, response);
+    });
 
-    if (tinyBrolltRes) {
-      setTinyBrolltResponse(tinyBrolltRes as DiagnosisResponse);
-      console.log(`Diagnose Ergebnis für TinyBrollt:`, tinyBrolltRes);
-    }
+    const startTimeGelectraLarge = performance.now();
+    classifyText('GelectraLarge', diagnosis).then((response) => {
+      const endTimeGelectraLarge = performance.now();
+      setGelectraLargeResponse(response as DiagnosisResponse);
+      setGelectraLargeTime(
+        (endTimeGelectraLarge - startTimeGelectraLarge) / 1000
+      );
+      setResponsesReceived((prev) => prev + 1);
+      console.log(`Diagnose Ergebnis für GelectraLarge:`, response);
+    });
 
-    if (gelectraLargeRes) {
-      setGelectraLargeResponse(gelectraLargeRes as DiagnosisResponse);
-      console.log(`Diagnose Ergebnis für GelectraLarge:`, gelectraLargeRes);
-    }
+    setResponsesReceived(0);
   };
 
   const renderResponse = (response: DiagnosisResponse | null) => {
@@ -50,22 +65,29 @@ const AiArena = () => {
     return (
       <div className="response-container">
         <div className="response-item">
-          {response.input.split(' ').map((word, index) => (
-            <React.Fragment key={index}>
-              <span>
-                {word}{' '}
-                {response.DIAG.includes(word) && (
-                  <Badge badgeType={BadgeTypes.DIAGNOSE} />
-                )}
-                {response.MED.includes(word) && (
-                  <Badge badgeType={BadgeTypes.MEDICINE} />
-                )}
-                {response.TREAT.includes(word) && (
-                  <Badge badgeType={BadgeTypes.TREATMENT} />
-                )}{' '}
-              </span>
-            </React.Fragment>
-          ))}
+          {response.input.split(' ').map((word, index) => {
+            if (response.DIAG.includes(word)) {
+              return (
+                <React.Fragment key={index}>
+                  <Badge badgeType={BadgeTypes.DIAGNOSE} text={word} />{' '}
+                </React.Fragment>
+              );
+            } else if (response.MED.includes(word)) {
+              return (
+                <React.Fragment key={index}>
+                  <Badge badgeType={BadgeTypes.MEDICINE} text={word} />{' '}
+                </React.Fragment>
+              );
+            } else if (response.TREAT.includes(word)) {
+              return (
+                <React.Fragment key={index}>
+                  <Badge badgeType={BadgeTypes.TREATMENT} text={word} />{' '}
+                </React.Fragment>
+              );
+            } else {
+              return <span key={index}>{word} </span>;
+            }
+          })}
         </div>
       </div>
     );
@@ -91,20 +113,31 @@ const AiArena = () => {
             onClick={handleDiagnosisRequests}
             styleType={'primary'}
             text={
-              loading ? 'Diagnose wird angefordert...' : 'Diagnose anfordern'
+              loading
+                ? 'Diagnose wird angefordert...'
+                : responsesReceived < 2
+                ? 'Warte auf letzte Antwort...'
+                : 'Diagnose anfordern'
             }
-            disabled={loading}
           />
         </div>
 
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <div className="response-container">
           <div className="response-box">
-            <h2>TinyBrollt Response</h2>
+            {tinyBrolltTime !== null && (
+              <div className="timer">Zeit: {tinyBrolltTime.toFixed(2)} s</div>
+            )}
+            <h2>TinyBrollt</h2>
             {renderResponse(tinyBrolltResponse)}
           </div>
           <div className="response-box">
-            <h2>GelectraLarge Response</h2>
+            {gelectraLargeTime !== null && (
+              <div className="timer">
+                Zeit: {gelectraLargeTime.toFixed(2)} s
+              </div>
+            )}
+            <h2>GelectraLarge</h2>
             {renderResponse(gelectraLargeResponse)}
           </div>
         </div>

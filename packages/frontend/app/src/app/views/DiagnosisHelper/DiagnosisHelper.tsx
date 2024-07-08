@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import SpeechToText from '../../components/SpeechToText/SpeechToText';
-import Tabs from '../../components/Tabs/Tabs';
 import TextInput from '../../components/TextInput/TextInput';
 import Button from '../../components/Button/Button';
 import useClassifyText from '../../hooks/useClassifyText';
 import './DiagnosisHelper.css';
 import { AiOutlineArrowLeft } from 'react-icons/ai';
 import Table from '../../components/Table/Table';
+import Badge, { BadgeTypes } from '../../components/Badge/Badge';
+import Tabs from '../../components/Tabs/Tabs';
+
+interface DiagnosisResponse {
+  DIAG: string[];
+  MED: string[];
+  TREAT: string[];
+  input: string;
+}
 
 const DiagnosisHelper: React.FC = () => {
-
   const [addMissedToken_Diag, set_addMissedToken_Diag] = useState('');
   const [addMissedToken_Med, set_addMissedToken_Med] = useState('');
   const [addMissedToken_Treat, set_addMissedToken_Treat] = useState('');
@@ -22,33 +29,64 @@ const DiagnosisHelper: React.FC = () => {
   const [diagnosis, setDiagnosis] = useState('');
   const [diagnosisId, setDiagnosisId] = useState('');
   const [columns, setColumns] = useState<string[]>([]);
-  const [data, setData] = useState<{ [key: string]: any }[]>([]);
+  const [data, setData] = useState<{ [key: string]: React.ReactNode }[]>([]);
   const { classifyText, loading, error } = useClassifyText();
+  const [tableVisible, setTableVisible] = useState<boolean>(false);
 
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const [tinyBrolltResponse, setTinyBrolltResponse] =
+    useState<DiagnosisResponse | null>(null);
+  const [gelectraLargeResponse, setGelectraLargeResponse] =
+    useState<DiagnosisResponse | null>(null);
+  const [tinyBrolltTime, setTinyBrolltTime] = useState<number | null>(null);
+  const [gelectraLargeTime, setGelectraLargeTime] = useState<number | null>(
+    null
+  );
+  const [responsesReceived, setResponsesReceived] = useState(0);
+  const [selectedTab, setSelectedTab] = useState<
+    'TinyBrollt' | 'GelectraLarge'
+  >('TinyBrollt');
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('http://localhost:3030/api/requests');
-        const result = await response.json();
-        setColumns([
-          'id',
-          'input_text',
-          'missed_tokens',
-          'wrong_tokens',
-          'generatedResponse',
-          'model',
-          'timestamp',
-        ]);
-        setData(result);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
     fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch('http://localhost:3030/api/requests');
+      const result = await response.json();
+      setColumns([
+        'ID',
+        'Eingegebener Text',
+        'Fehlende Token',
+        'Falsche Token',
+        'Generierte Antwort',
+        'Modell',
+        'Zeitstempel',
+      ]);
+      setData(
+        result.map((item: any) => ({
+          ID: item.id,
+          'Eingegebener Text': item.input_text,
+          'Fehlende Token': JSON.stringify(item.missed_tokens),
+          'Falsche Token': JSON.stringify(item.wrong_tokens),
+          'Generierte Antwort':
+            typeof item.generatedResponse === 'string'
+              ? renderGeneratedResponse(item.generatedResponse)
+              : item.generatedResponse,
+          Modell: item.model,
+          Zeitstempel: formatTimestamp(item.timestamp),
+        }))
+      );
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const formatTimestamp = (timestamp: string) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString(); // Formats the date and time in the local time zone
+  };
 
   const handleSpeechToText = (transcript: string) => {
     setDiagnosis(transcript);
@@ -65,13 +103,16 @@ const DiagnosisHelper: React.FC = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:3030/database/missedToken', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(missedTokensData),
-      });
+      const response = await fetch(
+        'http://localhost:3030/database/missedToken',
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(missedTokensData),
+        }
+      );
 
       if (!response.ok) {
         throw new Error('Failed to send missed tokens');
@@ -96,13 +137,16 @@ const DiagnosisHelper: React.FC = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:3030/database/wrongToken', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(wrongTokensData),
-      });
+      const response = await fetch(
+        'http://localhost:3030/database/wrongToken',
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(wrongTokensData),
+        }
+      );
 
       if (!response.ok) {
         throw new Error('Failed to send wrong tokens');
@@ -133,25 +177,91 @@ const DiagnosisHelper: React.FC = () => {
     const response = await classifyText(model, diagnosis);
     if (response) {
       console.log(`Diagnose Ergebnis für ${model}:`, response);
-      setColumns([
-        'input_text',
-        'missed_tokens',
-        'wrong_tokens',
-        'generated_response',
-        'model',
-        'timestamp',
-      ]);
-      setData([
-        {
-          input_text: 'Example Input',
-          missed_tokens: 'Token1, Token2',
-          wrong_tokens: 'Token3, Token4',
-          generated_response: 'Response Text',
-          model: 'TinyBrollt',
-          timestamp: new Date().toLocaleString(),
-        },
-      ]);
+      if (model === 'TinyBrollt') {
+        setTinyBrolltResponse(response);
+      } else {
+        setGelectraLargeResponse(response);
+      }
+      fetchData();
     }
+  };
+
+  const renderGeneratedResponse = (generatedResponse: string) => {
+    try {
+      if (!generatedResponse) {
+        return <div>Keine Antwort vorhanden</div>;
+      }
+
+      const responseObj = JSON.parse(generatedResponse);
+
+      if (!responseObj) {
+        return <div>Ungültige Antwort</div>;
+      }
+
+      return (
+        <div>
+          {responseObj.DIAG &&
+            responseObj.DIAG.map((diag: string, index: number) => (
+              <Badge key={index} badgeType={BadgeTypes.DIAGNOSE} text={diag} />
+            ))}
+          {responseObj.MED &&
+            responseObj.MED.map((med: string, index: number) => (
+              <Badge key={index} badgeType={BadgeTypes.MEDICINE} text={med} />
+            ))}
+          {responseObj.TREAT &&
+            responseObj.TREAT.map((treat: string, index: number) => (
+              <Badge
+                key={index}
+                badgeType={BadgeTypes.TREATMENT}
+                text={treat}
+              />
+            ))}
+        </div>
+      );
+    } catch (error) {
+      console.error(
+        'Error parsing generatedResponse:',
+        error,
+        generatedResponse
+      );
+      return <div>Fehler beim Anzeigen der Antwort</div>;
+    }
+  };
+
+  const renderResponse = (response: DiagnosisResponse | null) => {
+    if (!response || !response.input) {
+      return <p>Erwarte Text</p>;
+    }
+
+    return (
+      <div className="response-container">
+        <div className="response-item">
+          {response.input.split(' ').map((word, index) => {
+            if (response.DIAG.includes(word)) {
+              return (
+                <React.Fragment key={index}>
+                  <Badge badgeType={BadgeTypes.DIAGNOSE} text={word} />{' '}
+                </React.Fragment>
+              );
+            } else if (response.MED.includes(word)) {
+              return (
+                <React.Fragment key={index}>
+                  <Badge badgeType={BadgeTypes.MEDICINE} text={word} />{' '}
+                </React.Fragment>
+              );
+            } else if (response.TREAT.includes(word)) {
+              return (
+                <React.Fragment key={index}>
+                  <Badge badgeType={BadgeTypes.TREATMENT} text={word} />{' '}
+                </React.Fragment>
+              );
+            } else {
+              return <span key={index}>{word} </span>;
+            }
+          })}
+        </div>
+      </div>
+    );
   };
 
   const tabs = [
@@ -222,10 +332,10 @@ const DiagnosisHelper: React.FC = () => {
           <div className="diagnosis-helper__model-tabs_feedback_choseDiagnosis">
             <label>ID der Diagnose</label>
             <TextInput
-                  value={diagnosisId}
-                  onChange={setDiagnosisId}
-                  height="4vh"
-                />
+              value={diagnosisId}
+              onChange={setDiagnosisId}
+              height="4vh"
+            />
           </div>
 
           <div className="diagnosis-helper__model-tabs_feedback_addMissedToken">
@@ -286,11 +396,15 @@ const DiagnosisHelper: React.FC = () => {
                 />
               </div>
             </div>
-            <div className='diagnosis-helper__model-tabs__button'>
+            <div className="diagnosis-helper__model-tabs__button">
               <Button
                 onClick={handle_feedback}
                 styleType={'primary'}
-                text={loading ? 'Korrektur wird hinzugefügt...' : 'Korrektur hinzufügen'}
+                text={
+                  loading
+                    ? 'Korrektur wird hinzugefügt...'
+                    : 'Korrektur hinzufügen'
+                }
                 disabled={loading}
               />
             </div>
@@ -298,7 +412,7 @@ const DiagnosisHelper: React.FC = () => {
           </div>
         </>
       ),
-    }
+    },
   ];
 
   return (
@@ -306,13 +420,54 @@ const DiagnosisHelper: React.FC = () => {
       <Link to="/" className="back-arrow">
         <AiOutlineArrowLeft />
       </Link>
+
       <div className="diagnosis-helper">
         <div className="diagnosis-helper__model-tabs">
           <div className="diagnosis-helper__model-tabs__left">
-            <Table columns={columns} data={data} />
+            <div className="diagnosis-helper__response">
+              <div className="response-box">
+                {selectedTab === 'TinyBrollt' && tinyBrolltTime !== null && (
+                  <div className="timer">
+                    Zeit: {tinyBrolltTime.toFixed(2)} s
+                  </div>
+                )}
+                {selectedTab === 'GelectraLarge' &&
+                  gelectraLargeTime !== null && (
+                    <div className="timer">
+                      Zeit: {gelectraLargeTime.toFixed(2)} s
+                    </div>
+                  )}
+                <h2>{selectedTab}</h2>
+                {selectedTab === 'TinyBrollt'
+                  ? renderResponse(tinyBrolltResponse)
+                  : renderResponse(gelectraLargeResponse)}
+              </div>
+            </div>
+            <div className="badge-container">
+              <Badge badgeType={BadgeTypes.DIAGNOSE} text={'DIAGNOSE'} />
+              <Badge badgeType={BadgeTypes.MEDICINE} text={'MEDIZIN'} />
+              <Badge badgeType={BadgeTypes.TREATMENT} text={'BEHANDLUNG'} />
+            </div>
+            <div className="diagnosis-helper__controls">
+              <Button
+                onClick={() => setTableVisible(!tableVisible)}
+                styleType={'primary'}
+                text={tableVisible ? 'Tabelle verstecken' : 'Tabelle anzeigen'}
+              ></Button>
+              {tableVisible && (
+                <div className="diagnosis-helper__table">
+                  <Table columns={columns} data={data} />
+                </div>
+              )}
+            </div>
           </div>
           <div className="diagnosis-helper__model-tabs__right">
-            <Tabs tabs={tabs} />
+            <Tabs
+              tabs={tabs}
+              onSelect={(tabLabel) =>
+                setSelectedTab(tabLabel as 'TinyBrollt' | 'GelectraLarge')
+              }
+            />
           </div>
         </div>
       </div>

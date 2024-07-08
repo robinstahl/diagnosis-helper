@@ -10,9 +10,10 @@ export enum BadgeTypes {
 
 interface BadgeProps {
   badgeType: BadgeTypes;
+  text?: string;
 }
 
-const Badge: React.FC<BadgeProps> = ({ badgeType }) => {
+const Badge: React.FC<BadgeProps> = ({ badgeType, text }) => {
   const getClassName = () => {
     switch (badgeType) {
       case BadgeTypes.MEDICINE:
@@ -28,7 +29,7 @@ const Badge: React.FC<BadgeProps> = ({ badgeType }) => {
     }
   };
 
-  return <span className={getClassName()}>{badgeType.toUpperCase()}</span>;
+  return <span className={getClassName()}>{text}</span>;
 };
 
 export default Badge;

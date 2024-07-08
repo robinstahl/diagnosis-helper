@@ -1,29 +1,26 @@
 .diagnosis-helper-container {
-  position: relative;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
-.back-arrow {
-  position: absolute;
-  left: 20px;
-  top: 20px;
-  font-size: 24px;
-  text-decoration: none;
-  color: black;
-  z-index: 10;
+.badge-container {
+  margin-bottom: 10px;
 }
 
 .diagnosis-helper {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex: 1;
   width: 100%;
-  height: 100vh;
-  padding: 10px;
+  margin-top: 5%;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .diagnosis-helper__model-tabs {
   display: flex;
+  margin-right: 10px;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -31,32 +28,46 @@
 
 .diagnosis-helper__model-tabs__left,
 .diagnosis-helper__model-tabs__right {
-  margin-top: 50px;
   flex: 1;
+  width: 100%;
   padding: 10px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  height: 100%;
 }
 
 .diagnosis-helper__model-tabs__left {
+  flex: 1;
   border-right: 1px solid #ddd;
+  height: 100%;
+  justify-content: flex-start;
 }
 
-.diagnosis-helper__model-tabs__text-input {
-  font-size: 16px;
+.diagnosis-helper__response {
   width: 100%;
-  flex: 1;
-  margin: 10px 0;
-  padding: 10px;
+  height: auto;
+  border-radius: 4px;
+  padding-right: 20px;
+  padding-bottom: 20px;
   box-sizing: border-box;
 }
 
-.diagnosis-helper__model-tabs__button {
+.diagnosis-helper__controls {
+  display: flex;
+  flex-direction: column;
   width: 100%;
+}
+
+.diagnosis-helper__table {
+  margin-top: 10px;
+  max-width: 50vw;
+  max-height: 50vh;
+  overflow-y: auto;
+  border: 2px solid #000;
+  border-radius: 4px;
+  padding: 10px;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .diagnosis-helper button {
@@ -65,11 +76,11 @@
   box-sizing: border-box;
 }
 
-
 .feedback-input-row {
   display: flex;
   gap: 10px;
 }
+
 .feedback-input-container {
   display: flex;
   flex-direction: column;
@@ -77,3 +88,78 @@
   padding-bottom: 10px;
 }
 
+.response-box {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+}
+
+.response-box h2 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+.response-box pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  background-color: #eee;
+  padding: 10px;
+  border-radius: 4px;
+  overflow: auto;
+}
+
+.timer {
+  font-size: 14px;
+  color: #555;
+}
+
+.toggle-button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.toggle-button:hover {
+  background-color: #0056b3;
+}
+
+.tab-container {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.tab-headers {
+  display: flex;
+  background-color: #f1f1f1;
+}
+
+.tab-header {
+  flex: 1;
+  padding: 10px 20px;
+  cursor: pointer;
+  border: none;
+  background-color: #f1f1f1;
+  transition: background-color 0.3s ease;
+}
+
+.tab-header:hover {
+  background-color: #ddd;
+}
+
+.tab-header.active {
+  background-color: #fff;
+  border-bottom: 2px solid #552583;
+}
+
+.tab-content {
+  padding: 20px;
+  background-color: #fff;
+}

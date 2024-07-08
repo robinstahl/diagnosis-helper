@@ -1,13 +1,10 @@
-import json
-import time
-from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, jsonify, request
-
+from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from datetime import datetime
-from tinybrollt_service import process_text as tinybrollt_process_text
 from gelectralarge_service import process_text as gelectralarge_process_text
-from databse_service import add_instance, get_instance_by_id, init_db, add_missed_tokens, get_missed_tokens, add_wrong_tokens, get_wrong_tokens, get_all_requests
+from tinybrollt_service import process_text as tinybrollt_process_text
+from databse_service import init_db, add_instance, get_all_requests, add_missed_tokens, get_missed_tokens, add_wrong_tokens, get_wrong_tokens
 
 app = Flask(__name__)
 CORS(app)
@@ -15,33 +12,25 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://diagnosis_user:password@lo
 
 init_db(app)
 
-@app.route('/test')
-def test():
-    add_instance("test", {"test": "test"}, "test")
-    return {"hallo": "Hallo"}
+@app.route('/classifyText/<model>', methods=['POST'])
+def classify_text(model):
+    data = request.json
+    text = data.get('text')
 
-@app.route('/classifyText/TinyBrollt', methods=['GET'])
-def classify_text_tinybrollt():
-    text = request.args.get('text', default='', type=str)
-    erg = tinybrollt_process_text(text)
-    id = add_instance(text, erg, "TinyBrollt")
-    return jsonify({"id": id, "model": "TinyBrollt", "data": erg})
+    if model == 'TinyBrollt':
+        generated_response = tinybrollt_process_text(text)
+    elif model == 'GelectraLarge':
+        generated_response = gelectralarge_process_text(text)
+    else:
+        return jsonify({"error": "Invalid model specified"}), 400
 
-@app.route('/classifyText/GelectraLarge', methods=['GET'])
-def classify_text_gelectralarge():
-    text = request.args.get('text', default='', type=str)
-    erg = gelectralarge_process_text(text)
-    id = add_instance(text, erg, "GelectraLarge")
-    return jsonify({"id": id, "model": "GelectraLarge", "data": erg})
+    new_entry_id = add_instance(text, generated_response, model)
+    return jsonify({"id": new_entry_id, "model": model, "data": generated_response})
 
 @app.route('/api/requests', methods=['GET'])
 def get_requests():
     requests = get_all_requests()
-    for req in requests:
-        req['missed_tokens'] = json.dumps(req['missed_tokens'])
-        req['wrong_tokens'] = json.dumps(req['wrong_tokens'])
     return jsonify(requests)
-
 
 @app.route('/database/missedToken', methods=['GET', 'PUT'])
 def handle_missed_token():

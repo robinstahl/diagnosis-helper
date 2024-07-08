@@ -1,5 +1,4 @@
 import torch.nn.functional as F
-from flask import Flask, jsonify, request
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 tokenizer = AutoTokenizer.from_pretrained("MSey/tiny_BROLLLT_0001.1")
@@ -23,19 +22,14 @@ def classify_word(word):
     response_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
     # Extraktion der Labels MED, DIAG, TREAT aus der generierten Antwort
-    label = "O"  # Default Label
     if "MED" in response_text:
-        index = response_text.index("MED")
-        prefix = response_text[max(0, index-3):index]
-        label = prefix + "MED"
+        label = "MED"
     elif "DIAG" in response_text:
-        index = response_text.index("DIAG")
-        prefix = response_text[max(0, index-3):index]
-        label = prefix + "DIAG"
+        label = "DIAG"
     elif "TREAT" in response_text:
-        index = response_text.index("TREAT")
-        prefix = response_text[max(0, index-3):index]
-        label = prefix + "TREAT"
+        label = "TREAT"
+    else:
+        label = "O"  # Default Label
 
     return label
 
@@ -50,13 +44,14 @@ def process_text(text):
 
     for word in words:
         label = classify_word(word)
-        print("word classified: " + label)
-        if label.endswith("MED"):
+        print(f"Word: {word}, Label: {label}")  # Debugging output
+        if label == "MED":
             results["MED"].append(word)
-        elif label.endswith("DIAG"):
+        elif label == "DIAG":
             results["DIAG"].append(word)
-        elif label.endswith("TREAT"):
+        elif label == "TREAT":
             results["TREAT"].append(word)
+
     return {
         "input": text,
         "MED": results["MED"],

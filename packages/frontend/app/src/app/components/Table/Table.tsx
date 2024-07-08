@@ -3,7 +3,7 @@ import './Table.css';
 
 interface TableComponentProps {
   columns: string[];
-  data: { [key: string]: string }[];
+  data: { [key: string]: React.ReactNode }[];
 }
 
 const Table: React.FC<TableComponentProps> = ({ columns, data }) => {

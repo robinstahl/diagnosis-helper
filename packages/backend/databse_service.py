@@ -1,4 +1,3 @@
-import json
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
@@ -10,10 +9,9 @@ def init_db(app):
         db.create_all()
 
 def add_instance(input_text, generated_response_in, model_name):
-    generated_response_str = json.dumps(generated_response_in)
     new_entry = Request(
         input_text=input_text,
-        generatedResponse=generated_response_str,
+        generatedResponse=generated_response_in,
         model=model_name,
         timestamp=datetime.now().astimezone()
     )
@@ -29,65 +27,43 @@ def get_all_instances():
 
 def add_missed_tokens(id, tokens):
     request_instance = get_instance_by_id(Request, id)
-    try:
-        missed_tokens = json.loads(request_instance.missed_tokens) if request_instance.missed_tokens else {"MED": [], "DIAG": [], "TREAT": []}
-    except json.JSONDecodeError:
-        missed_tokens = {"MED": [], "DIAG": [], "TREAT": []}
+    missed_tokens = request_instance.missed_tokens or {"MED": [], "DIAG": [], "TREAT": []}
 
     for category, new_tokens in tokens.items():
         if category in missed_tokens:
             missed_tokens[category].extend([token for token in new_tokens if token])
 
-    request_instance.missed_tokens = json.dumps(missed_tokens)
+    request_instance.missed_tokens = missed_tokens
     db.session.commit()
 
 def get_missed_tokens(id):
     request_instance = get_instance_by_id(Request, id)
-    try:
-        return json.loads(request_instance.missed_tokens) if request_instance.missed_tokens else {"MED": [], "DIAG": [], "TREAT": []}
-    except json.JSONDecodeError:
-        return {"MED": [], "DIAG": [], "TREAT": []}
+    return request_instance.missed_tokens or {"MED": [], "DIAG": [], "TREAT": []}
 
 def add_wrong_tokens(id, tokens):
     request_instance = get_instance_by_id(Request, id)
-    try:
-        wrong_tokens = json.loads(request_instance.wrong_tokens) if request_instance.wrong_tokens else {"MED": [], "DIAG": [], "TREAT": []}
-    except json.JSONDecodeError:
-        wrong_tokens = {"MED": [], "DIAG": [], "TREAT": []}
+    wrong_tokens = request_instance.wrong_tokens or {"MED": [], "DIAG": [], "TREAT": []}
 
     for category, new_tokens in tokens.items():
         if category in wrong_tokens:
             wrong_tokens[category].extend([token for token in new_tokens if token])
 
-    request_instance.wrong_tokens = json.dumps(wrong_tokens)
+    request_instance.wrong_tokens = wrong_tokens
     db.session.commit()
 
 def get_wrong_tokens(id):
     request_instance = get_instance_by_id(Request, id)
-    try:
-        return json.loads(request_instance.wrong_tokens) if request_instance.wrong_tokens else {"MED": [], "DIAG": [], "TREAT": []}
-    except json.JSONDecodeError:
-        return {"MED": [], "DIAG": [], "TREAT": []}
+    return request_instance.wrong_tokens or {"MED": [], "DIAG": [], "TREAT": []}
 
 def get_all_requests():
     requests = Request.query.all()
     result = []
     for req in requests:
-        try:
-            missed_tokens = json.loads(req.missed_tokens) if req.missed_tokens else {"MED": [], "DIAG": [], "TREAT": []}
-        except json.JSONDecodeError:
-            missed_tokens = {"MED": [], "DIAG": [], "TREAT": []}
-
-        try:
-            wrong_tokens = json.loads(req.wrong_tokens) if req.wrong_tokens else {"MED": [], "DIAG": [], "TREAT": []}
-        except json.JSONDecodeError:
-            wrong_tokens = {"MED": [], "DIAG": [], "TREAT": []}
-
         result.append({
             'id': req.id,
             'input_text': req.input_text,
-            'missed_tokens': missed_tokens,
-            'wrong_tokens': wrong_tokens,
+            'missed_tokens': req.missed_tokens or {"MED": [], "DIAG": [], "TREAT": []},
+            'wrong_tokens': req.wrong_tokens or {"MED": [], "DIAG": [], "TREAT": []},
             'generatedResponse': req.generatedResponse,
             'model': req.model,
             'timestamp': req.timestamp.isoformat() if req.timestamp else None
@@ -99,9 +75,9 @@ class Request(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     input_text = db.Column(db.String(255), nullable=False)
-    missed_tokens = db.Column('missedTokens', db.Text, nullable=True)
-    wrong_tokens = db.Column('wrongToken', db.Text, nullable=True)
-    generatedResponse = db.Column(db.Text, nullable=True)
+    missed_tokens = db.Column('missedTokens', db.JSON, nullable=True)
+    wrong_tokens = db.Column('wrongToken', db.JSON, nullable=True)
+    generatedResponse = db.Column(db.JSON, nullable=True)
     model = db.Column(db.String, nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 

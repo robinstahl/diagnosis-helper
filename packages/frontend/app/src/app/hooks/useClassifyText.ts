@@ -35,12 +35,13 @@ const useClassifyText = (): UseClassifyTextHook => {
 
     try {
       const response = await fetch(
-        `http://localhost:3030/classifyText/${model}?text=${text}`,
+        `http://localhost:3030/classifyText/${model}`,
         {
-          method: 'GET',
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
+          body: JSON.stringify({ text }),
         }
       );
 

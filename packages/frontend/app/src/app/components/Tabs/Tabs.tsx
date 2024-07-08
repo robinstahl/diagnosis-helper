@@ -1,31 +1,44 @@
-import React, { useState } from "react";
-import "./Tabs.css";
+import React from 'react';
 
-type TabProps = {
-  tabs: { label: string; content: React.ReactNode }[];
-};
+interface Tab {
+  label: string;
+  content: React.ReactNode;
+}
 
-const Tabs: React.FC<TabProps> = ({ tabs }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
+interface TabsProps {
+  tabs: Tab[];
+  onSelect: (tabLabel: 'TinyBrollt' | 'GelectraLarge') => void;
+}
 
-  const handleTabClick = (index: number) => {
-    setActiveIndex(index);
+const Tabs: React.FC<TabsProps> = ({ tabs, onSelect }) => {
+  const [selectedTab, setSelectedTab] = React.useState<
+    'TinyBrollt' | 'GelectraLarge'
+  >(tabs[0].label as 'TinyBrollt' | 'GelectraLarge');
+
+  const handleTabClick = (tab: Tab) => {
+    const tabLabel = tab.label as 'TinyBrollt' | 'GelectraLarge';
+    setSelectedTab(tabLabel);
+    onSelect(tabLabel);
   };
 
   return (
     <div className="tab-container">
       <div className="tab-headers">
-        {tabs.map((tab, index) => (
+        {tabs.map((tab) => (
           <button
-            key={index}
-            className={`tab-header ${index === activeIndex ? "active" : ""}`}
-            onClick={() => handleTabClick(index)}
+            key={tab.label}
+            className={`tab-header ${
+              selectedTab === tab.label ? 'active' : ''
+            }`}
+            onClick={() => handleTabClick(tab)}
           >
             {tab.label}
           </button>
         ))}
       </div>
-      <div className="tab-content">{tabs[activeIndex].content}</div>
+      <div className="tab-content">
+        {tabs.find((tab) => tab.label === selectedTab)?.content}
+      </div>
     </div>
   );
 };
