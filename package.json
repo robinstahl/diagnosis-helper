@@ -5,10 +5,18 @@
   "scripts": {
     "start:frontend": "nx serve frontend",
     "start:backend": "bash start_backend.sh",
-    "start:backend:windoof": "bash start_backend.bat",
+    "start:backend:windows": "start_backend.bat",
     "start:all": "concurrently \"npm run start:frontend\" \"npm run start:backend\" \"docker compose up -d\"",
-    "postinstall": "cd packages/backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt",
-    "start:windoof": "concurrently \"npm run start:frontend\" \"npm run start:backend:windoof\" \"docker compose up -d\""
+    "postinstall:unix": "cd packages/backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt",
+    "postinstall:windows": "cd packages/backend && python -m venv venv && venv\\Scripts\\activate && pip install -r requirements.txt",
+    "postinstall": "cross-env-shell \"npm run postinstall:${OS}\"",
+    "start:windows": "concurrently \"npm run start:frontend\" \"npm run start:backend:windows\" \"docker compose up -d\"",
+    "start:frontend:unix": "nx serve frontend",
+    "start:frontend:windows": "nx serve frontend",
+    "start:backend:unix": "bash start_backend.sh",
+    "start:backend:windows": "start_backend.bat",
+    "start:all:unix": "concurrently \"npm run start:frontend:unix\" \"npm run start:backend:unix\" \"docker compose up -d\"",
+    "start:all:windows": "concurrently \"npm run start:frontend:windows\" \"npm run start:backend:windows\" \"docker compose up -d\""
   },
   "private": true,
   "devDependencies": {
@@ -36,6 +44,7 @@
     "@vitest/ui": "^1.3.1",
     "babel-jest": "^29.4.1",
     "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
     "eslint": "~8.57.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "2.27.5",
