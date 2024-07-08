@@ -6,6 +6,7 @@ import Button from '../../components/Button/Button';
 import Badge, { BadgeTypes } from '../../components/Badge/Badge';
 import './AiArena.css';
 import { AiOutlineArrowLeft } from 'react-icons/ai';
+import SpeechToText from '../../components/SpeechToText/SpeechToText';
 
 interface DiagnosisResponse {
   DIAG: string[];
@@ -57,6 +58,10 @@ const AiArena = () => {
     setResponsesReceived(0);
   };
 
+  const handleSpeechToText = (transcript: string) => {
+    setDiagnosis(transcript);
+  };
+
   const renderResponse = (response: DiagnosisResponse | null) => {
     if (!response || !response.input) {
       return <p>Noch kein Vergleich möglich, bitte Text eingeben!</p>;
@@ -101,6 +106,8 @@ const AiArena = () => {
       <div className="ai-arena">
         <h1>AI Arena</h1>
         <div className="input-container">
+          <SpeechToText onSpeechToText={handleSpeechToText} />
+          <br></br>
           <TextInput
             value={diagnosis}
             onChange={setDiagnosis}
@@ -119,6 +126,7 @@ const AiArena = () => {
                 ? 'Warte auf letzte Antwort...'
                 : 'Diagnose anfordern'
             }
+            disabled={loading || responsesReceived < 2}
           />
         </div>
 

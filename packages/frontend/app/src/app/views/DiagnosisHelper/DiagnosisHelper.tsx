@@ -85,7 +85,7 @@ const DiagnosisHelper: React.FC = () => {
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
-    return date.toLocaleString(); // Formats the date and time in the local time zone
+    return date.toLocaleString();
   };
 
   const handleSpeechToText = (transcript: string) => {
