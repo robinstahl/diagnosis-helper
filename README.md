@@ -8,7 +8,7 @@
  make sure the requirements are installed and Docker Desktop is running
 
 `For Windows` (in root):
--> set the OS "$env:OS="windows" (Windows power shell) OR set the OS "set OS=windows" (Windows Comman prop)
+-> set the OS "$env:OS="windows"" (Windows power shell) OR set the OS "set OS=windows" (Windows Comman prop)
 -> "npm install"
 -> "npm run start:windows"
 
